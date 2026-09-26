@@ -21,7 +21,7 @@ const slides = photos.map((p) => ({
 
 <dialog
   id="lightbox"
-  class="lightbox m-0 h-dvh max-h-none w-screen max-w-none bg-ink p-0 text-paper backdrop:bg-ink"
+  class="lightbox theme-dark m-0 h-dvh max-h-none w-screen max-w-none bg-bg p-0 text-fg backdrop:bg-bg"
   aria-label={`${title} — photograph viewer`}
 >
   <div class="grid h-full grid-rows-[auto_1fr_auto]">
@@ -48,7 +48,7 @@ const slides = photos.map((p) => ({
       </button>
     </div>
 
-    <p class="min-h-14 px-5 py-4 text-center text-sm text-ash sm:px-8" data-lb-caption></p>
+    <p class="min-h-14 px-5 py-4 text-center text-sm text-muted sm:px-8" data-lb-caption></p>
   </div>
 </dialog>
 
@@ -122,7 +122,7 @@ const slides = photos.map((p) => ({
     place-items: center;
     width: 2.75rem;
     height: 2.75rem;
-    color: var(--color-paper);
+    color: var(--color-fg);
     background: rgb(15 14 12 / 0.5);
     border: 1px solid var(--color-line);
     cursor: pointer;
@@ -131,8 +131,8 @@ const slides = photos.map((p) => ({
       color 200ms;
   }
   .lb-btn:hover {
-    border-color: var(--color-brass);
-    color: var(--color-brass);
+    border-color: var(--color-accent);
+    color: var(--color-accent);
   }
 
   @media (prefers-reduced-motion: no-preference) {

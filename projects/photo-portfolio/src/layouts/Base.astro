@@ -25,7 +25,19 @@ const ogUrl = cldUrl(ogImage, { width: 1200, ratio: '1.91:1' });
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <script is:inline>document.documentElement.classList.add('js');</script>
+    <script is:inline>
+      // Runs before paint: mark JS as available and apply the theme (saved choice, else system setting).
+      (function () {
+        var root = document.documentElement;
+        root.classList.add('js');
+        var theme = null;
+        try { theme = localStorage.getItem('theme'); } catch (e) {}
+        if (theme !== 'light' && theme !== 'dark') {
+          theme = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        }
+        root.dataset.theme = theme;
+      })();
+    </script>
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
@@ -50,7 +62,7 @@ const ogUrl = cldUrl(ogImage, { width: 1200, ratio: '1.91:1' });
   <body>
     <a
       href="#main"
-      class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[70] focus:bg-paper focus:px-4 focus:py-3 focus:text-ink"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[70] focus:bg-fg focus:px-4 focus:py-3 focus:text-bg"
     >
       Skip to content
     </a>

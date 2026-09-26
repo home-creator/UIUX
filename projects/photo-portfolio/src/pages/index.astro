@@ -11,7 +11,7 @@ const { hero } = site;
 
 <Base overlayHeader>
   <!-- Hero: full-bleed, art-directed (portrait crop on phones, cinematic on desktop). -->
-  <section class="relative isolate h-[100svh] min-h-[560px] w-full overflow-hidden" aria-labelledby="hero-title">
+  <section class="theme-dark relative isolate h-[100svh] min-h-[560px] w-full overflow-hidden" aria-labelledby="hero-title">
     <div
       class="cld-frame absolute inset-0 -z-10"
       style={`background-color:${hero.tone};background-image:url("${cldPlaceholder(hero.id, '16:9')}")`}
@@ -38,7 +38,7 @@ const { hero } = site;
         aria-hidden="true"
       >
       </div>
-      <div class="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-ink via-ink/40 to-transparent" aria-hidden="true">
+      <div class="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-bg via-bg/40 to-transparent" aria-hidden="true">
       </div>
     </div>
 
@@ -50,7 +50,7 @@ const { hero } = site;
         data-reveal
         style="--delay:120ms"
       >
-        Stillness, <em class="text-brass">held</em> a moment longer.
+        Stillness, <em class="text-accent">held</em> a moment longer.
       </h1>
       <div class="mt-10 flex flex-wrap items-end justify-between gap-6" data-reveal style="--delay:240ms">
         <a href="#work" class="link inline-flex min-h-11 items-center gap-3 text-sm tracking-wide">
@@ -59,7 +59,7 @@ const { hero } = site;
             <path d="M7 1v12M1.5 7.5 7 13l5.5-5.5" stroke="currentColor" stroke-width="1.1"></path>
           </svg>
         </a>
-        <p class="eyebrow text-paper/70">{hero.caption}</p>
+        <p class="eyebrow text-fg/70">{hero.caption}</p>
       </div>
     </div>
   </section>
@@ -67,7 +67,7 @@ const { hero } = site;
   <!-- Statement -->
   <section class="mx-auto max-w-[1440px] px-5 py-28 sm:px-8 md:py-40 lg:px-12">
     <p
-      class="mx-auto max-w-3xl text-center font-display text-[clamp(1.6rem,3.2vw,2.6rem)] leading-[1.25] font-normal italic text-paper/90"
+      class="mx-auto max-w-3xl text-center font-display text-[clamp(1.6rem,3.2vw,2.6rem)] leading-[1.25] font-normal italic text-fg/90"
       data-reveal
     >
       “{site.tagline}”
@@ -119,10 +119,10 @@ const { hero } = site;
                   <p class="eyebrow mb-6">
                     Nº {pad(i + 1)} <span class="mx-2 text-line">/</span> {s.place}, {s.year}
                   </p>
-                  <h3 class="font-display text-[clamp(2.25rem,4.5vw,4rem)] leading-none font-normal tracking-[-0.02em] transition-colors duration-300 group-hover:text-brass">
+                  <h3 class="font-display text-[clamp(2.25rem,4.5vw,4rem)] leading-none font-normal tracking-[-0.02em] transition-colors duration-300 group-hover:text-accent">
                     {s.title}
                   </h3>
-                  <p class="mt-6 max-w-sm text-ash">{s.summary}</p>
+                  <p class="mt-6 max-w-sm text-muted">{s.summary}</p>
                   <span class="link mt-8 inline-flex min-h-11 items-center gap-3 text-sm">
                     View series
                     <svg width="18" height="10" viewBox="0 0 18 10" fill="none" aria-hidden="true" class="transition-transform duration-300 group-hover:translate-x-1">
@@ -149,11 +149,11 @@ const { hero } = site;
         <div class="mt-10 flex flex-wrap gap-x-10 gap-y-4">
           <a
             href={`mailto:${site.email}`}
-            class="inline-flex min-h-12 items-center border border-paper/80 px-7 text-sm tracking-wide transition-colors duration-300 hover:bg-paper hover:text-ink"
+            class="inline-flex min-h-12 items-center border border-fg/80 px-7 text-sm tracking-wide transition-colors duration-300 hover:bg-fg hover:text-bg"
           >
             Write to the studio
           </a>
-          <a href="/about" class="link inline-flex min-h-12 items-center text-sm text-ash hover:text-paper">About {site.name}</a>
+          <a href="/about" class="link inline-flex min-h-12 items-center text-sm text-muted hover:text-fg">About {site.name}</a>
         </div>
       </div>
     </div>

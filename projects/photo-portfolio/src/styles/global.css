@@ -1,22 +1,54 @@
 @import 'tailwindcss';
 
 /*
- * Palette & atmosphere — a warm, film-like dark room.
- * Near-black with a brown cast (never pure #000), paper-white type,
- * a single muted brass accent. All text pairs pass WCAG AA on --color-ink.
+ * Palette & atmosphere — two rooms.
+ * Dark (default): a warm, film-like darkroom. Near-black with a brown cast
+ * (never pure #000), paper-white type, a single muted brass accent.
+ * Light: the same palette printed on warm paper, with ink-brown type.
+ * Every text pair passes WCAG AA on --color-bg in both themes.
  */
 @theme {
-  --color-ink: #0f0e0c; /* background — warm black */
-  --color-ink-2: #171512; /* raised surfaces */
+  --color-bg: #0f0e0c; /* background — warm black */
+  --color-surface: #171512; /* raised surfaces */
   --color-line: #2c2824; /* hairlines */
-  --color-paper: #ece6db; /* primary text — 15.5:1 on ink */
-  --color-ash: #a39b8e; /* secondary text — 7.0:1 on ink */
-  --color-brass: #c2a57a; /* accent — 8.2:1 on ink */
+  --color-fg: #ece6db; /* primary text — 15.5:1 on bg */
+  --color-muted: #a39b8e; /* secondary text — 7.0:1 on bg */
+  --color-accent: #c2a57a; /* accent — 8.2:1 on bg */
 
   --font-display: 'Libre Bodoni', 'Bodoni Moda', Didot, 'Times New Roman', serif;
   --font-sans: 'Public Sans', ui-sans-serif, system-ui, sans-serif;
 
   --ease-film: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Light room — set on <html> by the theme script in Base.astro. */
+:root[data-theme='light'] {
+  color-scheme: light;
+  --color-bg: #f3eee6; /* warm paper */
+  --color-surface: #eae3d8;
+  --color-line: #d6cdbf;
+  --color-fg: #1b1814; /* 15.3:1 on bg */
+  --color-muted: #5e564b; /* 6.3:1 on bg */
+  --color-accent: #7d5f36; /* 5.1:1 on bg */
+  --grain-invert: 1;
+  --grain-opacity: 0.05;
+  --tint-strength: 0.5;
+}
+
+/*
+ * Always-dark scope for places where type sits on a photograph (the hero,
+ * its overlaid header) and for the photo viewer — photographs read best
+ * against dark, whatever the page theme.
+ */
+.theme-dark {
+  color-scheme: dark;
+  --color-bg: #0f0e0c;
+  --color-surface: #171512;
+  --color-line: #2c2824;
+  --color-fg: #ece6db;
+  --color-muted: #a39b8e;
+  --color-accent: #c2a57a;
+  color: var(--color-fg);
 }
 
 @layer base {
@@ -25,8 +57,8 @@
   }
 
   html {
-    background: var(--color-ink);
-    color: var(--color-paper);
+    background: var(--color-bg);
+    color: var(--color-fg);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
@@ -39,12 +71,12 @@
   }
 
   ::selection {
-    background: var(--color-brass);
-    color: var(--color-ink);
+    background: var(--color-accent);
+    color: var(--color-bg);
   }
 
   :focus-visible {
-    outline: 1px solid var(--color-brass);
+    outline: 1px solid var(--color-accent);
     outline-offset: 4px;
   }
 
@@ -77,7 +109,7 @@
     font-weight: 500;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: var(--color-ash);
+    color: var(--color-muted);
   }
 
   /* Hairline link with an underline that draws in. */
@@ -121,7 +153,8 @@
   position: fixed;
   inset: -50%;
   z-index: 60;
-  opacity: 0.07;
+  opacity: var(--grain-opacity, 0.07);
+  filter: invert(var(--grain-invert, 0));
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   animation: grain 1.2s steps(6) infinite;
 }

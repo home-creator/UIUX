@@ -1,0 +1,178 @@
+---
+import Base from '../layouts/Base.astro';
+import CldImage from '../components/CldImage.astro';
+import { site } from '../data/site';
+import { series } from '../data/series';
+import { cldUrl, cldSrcset, cldPlaceholder } from '../lib/cloudinary';
+
+const pad = (n: number) => String(n).padStart(2, '0');
+const { hero } = site;
+---
+
+<Base overlayHeader>
+  <!-- Hero: full-bleed, art-directed (portrait crop on phones, cinematic on desktop). -->
+  <section class="relative isolate h-[100svh] min-h-[560px] w-full overflow-hidden" aria-labelledby="hero-title">
+    <div
+      class="cld-frame absolute inset-0 -z-10"
+      style={`background-color:${hero.tone};background-image:url("${cldPlaceholder(hero.id, '16:9')}")`}
+    >
+      <picture class="block h-full w-full">
+        <source media="(max-width: 767px)" srcset={cldSrcset(hero.id, '9:16')} sizes="100vw" />
+        <img
+          src={cldUrl(hero.id, { width: 1920, ratio: '16:9' })}
+          srcset={cldSrcset(hero.id, '16:9')}
+          sizes="100vw"
+          alt={hero.alt}
+          width="1920"
+          height="1080"
+          fetchpriority="high"
+          decoding="async"
+          onload="this.dataset.loaded=''"
+          onerror="this.dataset.failed=''"
+          class="cld-img hero-img h-full w-full object-cover"
+        />
+      </picture>
+      <!-- Vignette + bottom scrim keep type legible over any photograph. -->
+      <div
+        class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_40%,rgb(15_14_12/0.55)_100%)]"
+        aria-hidden="true"
+      >
+      </div>
+      <div class="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-ink via-ink/40 to-transparent" aria-hidden="true">
+      </div>
+    </div>
+
+    <div class="mx-auto flex h-full max-w-[1440px] flex-col justify-end px-5 pb-14 sm:px-8 md:pb-20 lg:px-12">
+      <p class="eyebrow mb-5" data-reveal>{site.base} — {site.role}</p>
+      <h1
+        id="hero-title"
+        class="max-w-4xl font-display text-[clamp(2.5rem,7vw,6.5rem)] leading-[0.95] font-normal tracking-[-0.02em]"
+        data-reveal
+        style="--delay:120ms"
+      >
+        Stillness, <em class="text-brass">held</em> a moment longer.
+      </h1>
+      <div class="mt-10 flex flex-wrap items-end justify-between gap-6" data-reveal style="--delay:240ms">
+        <a href="#work" class="link inline-flex min-h-11 items-center gap-3 text-sm tracking-wide">
+          View the work
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <path d="M7 1v12M1.5 7.5 7 13l5.5-5.5" stroke="currentColor" stroke-width="1.1"></path>
+          </svg>
+        </a>
+        <p class="eyebrow text-paper/70">{hero.caption}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Statement -->
+  <section class="mx-auto max-w-[1440px] px-5 py-28 sm:px-8 md:py-40 lg:px-12">
+    <p
+      class="mx-auto max-w-3xl text-center font-display text-[clamp(1.6rem,3.2vw,2.6rem)] leading-[1.25] font-normal italic text-paper/90"
+      data-reveal
+    >
+      “{site.tagline}”
+    </p>
+  </section>
+
+  <!-- Selected series -->
+  <section id="work" class="mx-auto max-w-[1440px] scroll-mt-8 px-5 pb-24 sm:px-8 md:pb-36 lg:px-12" aria-labelledby="work-title">
+    <div class="mb-16 flex items-baseline justify-between border-b border-line pb-5 md:mb-24">
+      <h2 id="work-title" class="eyebrow">Selected series</h2>
+      <p class="eyebrow">{pad(series.length)} bodies of work</p>
+    </div>
+
+    <ol class="flex flex-col gap-28 md:gap-44">
+      {
+        series.map((s, i) => {
+          const flip = i % 2 === 1;
+          return (
+            <li>
+              <a
+                href={`/series/${s.slug}`}
+                class="series-card group grid items-end gap-8 md:grid-cols-12 md:gap-12"
+                aria-label={`${s.title}, ${s.place}, ${s.year}`}
+              >
+                <div
+                  class:list={[
+                    'overflow-hidden md:col-span-7',
+                    flip ? 'md:col-start-6 md:row-start-1' : 'md:col-start-1',
+                  ]}
+                  data-reveal
+                >
+                  <CldImage
+                    id={s.cover.id}
+                    alt=""
+                    ratio={s.cover.ratio}
+                    tone={s.cover.tone}
+                    sizes="(min-width: 768px) 58vw, 100vw"
+                    imgClass="group-hover:scale-[1.03]"
+                  />
+                </div>
+                <div
+                  class:list={[
+                    'md:col-span-4 md:pb-4',
+                    flip ? 'md:col-start-1 md:row-start-1' : 'md:col-start-9',
+                  ]}
+                  data-reveal
+                  style="--delay:120ms"
+                >
+                  <p class="eyebrow mb-6">
+                    Nº {pad(i + 1)} <span class="mx-2 text-line">/</span> {s.place}, {s.year}
+                  </p>
+                  <h3 class="font-display text-[clamp(2.25rem,4.5vw,4rem)] leading-none font-normal tracking-[-0.02em] transition-colors duration-300 group-hover:text-brass">
+                    {s.title}
+                  </h3>
+                  <p class="mt-6 max-w-sm text-ash">{s.summary}</p>
+                  <span class="link mt-8 inline-flex min-h-11 items-center gap-3 text-sm">
+                    View series
+                    <svg width="18" height="10" viewBox="0 0 18 10" fill="none" aria-hidden="true" class="transition-transform duration-300 group-hover:translate-x-1">
+                      <path d="M0 5h16.5M12.5 1l4 4-4 4" stroke="currentColor" stroke-width="1.1" />
+                    </svg>
+                  </span>
+                </div>
+              </a>
+            </li>
+          );
+        })
+      }
+    </ol>
+  </section>
+
+  <!-- Commission CTA -->
+  <section class="border-t border-line">
+    <div class="mx-auto grid max-w-[1440px] gap-10 px-5 py-24 sm:px-8 md:grid-cols-12 md:py-32 lg:px-12" data-reveal>
+      <p class="eyebrow md:col-span-3">Commissions</p>
+      <div class="md:col-span-9">
+        <h2 class="max-w-3xl font-display text-[clamp(2rem,4vw,3.5rem)] leading-[1.05] font-normal tracking-[-0.02em]">
+          Available for editorial, portrait and interiors work — and for prints.
+        </h2>
+        <div class="mt-10 flex flex-wrap gap-x-10 gap-y-4">
+          <a
+            href={`mailto:${site.email}`}
+            class="inline-flex min-h-12 items-center border border-paper/80 px-7 text-sm tracking-wide transition-colors duration-300 hover:bg-paper hover:text-ink"
+          >
+            Write to the studio
+          </a>
+          <a href="/about" class="link inline-flex min-h-12 items-center text-sm text-ash hover:text-paper">About {site.name}</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* A slow Ken Burns drift on the hero, paused for reduced motion. */
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-img[data-loaded] {
+      animation: drift 24s var(--ease-film) both;
+    }
+  }
+  @keyframes drift {
+    from {
+      transform: scale(1.08);
+    }
+    to {
+      transform: scale(1);
+    }
+  }
+</style>

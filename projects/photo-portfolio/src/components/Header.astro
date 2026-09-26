@@ -1,0 +1,46 @@
+---
+import { site } from '../data/site';
+
+interface Props {
+  overlay?: boolean;
+}
+const { overlay = false } = Astro.props;
+
+const path = Astro.url.pathname;
+const nav = [
+  { href: '/#work', label: 'Work', active: path.startsWith('/series') },
+  { href: '/about', label: 'About', active: path.startsWith('/about') },
+  { href: '/about#contact', label: 'Contact', active: false },
+];
+---
+
+<header
+  class:list={[
+    'z-40 w-full',
+    overlay ? 'absolute inset-x-0 top-0 bg-gradient-to-b from-ink/70 to-transparent' : 'relative border-b border-line',
+  ]}
+>
+  <div class="mx-auto flex max-w-[1440px] items-center justify-between gap-6 px-5 py-5 sm:px-8 md:py-7 lg:px-12">
+    <a href="/" class="group flex items-baseline gap-3" aria-label={`${site.name}, home`}>
+      <span class="font-display text-xl tracking-tight text-paper sm:text-2xl">{site.name}</span>
+      <span class="eyebrow hidden sm:inline">{site.role}</span>
+    </a>
+    <nav aria-label="Primary">
+      <ul class="flex items-center gap-5 text-sm sm:gap-8">
+        {
+          nav.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                class="link inline-flex min-h-11 items-center text-paper/90 hover:text-paper"
+                aria-current={item.active ? 'page' : undefined}
+              >
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </div>
+</header>

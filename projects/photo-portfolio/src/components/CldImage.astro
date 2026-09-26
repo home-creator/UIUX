@@ -1,0 +1,43 @@
+---
+import { cldUrl, cldSrcset, cldPlaceholder, ratioToNumber } from '../lib/cloudinary';
+
+interface Props {
+  id: string;
+  alt: string;
+  ratio: string;
+  /** Dominant colour shown while loading (and if the image fails). */
+  tone?: string;
+  /** Passed straight to the `sizes` attribute. */
+  sizes?: string;
+  /** Above-the-fold image: load eagerly with high fetch priority. */
+  priority?: boolean;
+  class?: string;
+  imgClass?: string;
+}
+
+const { id, alt, ratio, tone = '#1c1a17', sizes = '100vw', priority = false, class: className, imgClass } = Astro.props;
+
+const r = ratioToNumber(ratio);
+const width = 1600;
+const height = Math.round(width / r);
+---
+
+<div
+  class:list={['cld-frame relative overflow-hidden', className]}
+  style={`aspect-ratio:${width}/${height};background-color:${tone};background-image:url("${cldPlaceholder(id, ratio)}")`}
+>
+  <img
+    src={cldUrl(id, { width, ratio })}
+    srcset={cldSrcset(id, ratio)}
+    sizes={sizes}
+    alt={alt}
+    width={width}
+    height={height}
+    loading={priority ? 'eager' : 'lazy'}
+    fetchpriority={priority ? 'high' : 'auto'}
+    decoding="async"
+    onload="this.dataset.loaded=''"
+    onerror="this.dataset.failed=''"
+    class:list={['cld-img absolute inset-0 h-full w-full object-cover', imgClass]}
+  />
+</div>

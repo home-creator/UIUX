@@ -1,0 +1,25 @@
+---
+import { site } from '../data/site';
+const year = new Date().getFullYear();
+---
+
+<footer class="border-t border-line">
+  <div
+    class="mx-auto flex max-w-[1440px] flex-col gap-6 px-5 py-10 text-sm text-ash sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-12"
+  >
+    <p>© {year} {site.name}. All photographs protected by copyright.</p>
+    <ul class="flex flex-wrap gap-x-8 gap-y-2">
+      <li><a class="link inline-flex min-h-11 items-center hover:text-paper" href={`mailto:${site.email}`}>{site.email}</a></li>
+      {
+        site.social.map((s) => (
+          <li>
+            <a class="link inline-flex min-h-11 items-center hover:text-paper" href={s.href} rel="me noopener" target="_blank">
+              {s.label}
+              <span class="sr-only"> (opens in a new tab)</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</footer>

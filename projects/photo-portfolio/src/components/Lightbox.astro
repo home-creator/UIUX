@@ -1,0 +1,148 @@
+---
+import type { Photo } from '../lib/config';
+import { cldUrl, cldSrcset } from '../lib/cloudinary';
+
+interface Props {
+  photos: Photo[];
+  title: string;
+}
+
+const { photos, title } = Astro.props;
+
+// The lightbox shows each frame uncropped, at its original proportions.
+const slides = photos.map((p) => ({
+  src: cldUrl(p.id, { width: 2048 }),
+  srcset: cldSrcset(p.id),
+  alt: p.alt,
+  caption: p.caption ?? '',
+  tone: p.tone,
+}));
+---
+
+<dialog
+  id="lightbox"
+  class="lightbox theme-dark m-0 h-dvh max-h-none w-screen max-w-none bg-bg p-0 text-fg backdrop:bg-bg"
+  aria-label={`${title} — photograph viewer`}
+>
+  <div class="grid h-full grid-rows-[auto_1fr_auto]">
+    <div class="flex items-center justify-between px-5 py-4 sm:px-8">
+      <p class="eyebrow" aria-live="polite"><span data-lb-count></span></p>
+      <button type="button" class="lb-btn" data-lb-close aria-label="Close viewer">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <path d="M3 3l14 14M17 3 3 17" stroke="currentColor" stroke-width="1.2"></path>
+        </svg>
+      </button>
+    </div>
+
+    <div class="relative flex min-h-0 items-center justify-center px-2 sm:px-20">
+      <img data-lb-img alt="" sizes="100vw" class="max-h-full max-w-full object-contain" />
+      <button type="button" class="lb-btn absolute top-1/2 left-2 -translate-y-1/2 sm:left-6" data-lb-prev aria-label="Previous photograph">
+        <svg width="22" height="12" viewBox="0 0 22 12" fill="none" aria-hidden="true">
+          <path d="M22 6H1.5M6 1 1 6l5 5" stroke="currentColor" stroke-width="1.2"></path>
+        </svg>
+      </button>
+      <button type="button" class="lb-btn absolute top-1/2 right-2 -translate-y-1/2 sm:right-6" data-lb-next aria-label="Next photograph">
+        <svg width="22" height="12" viewBox="0 0 22 12" fill="none" aria-hidden="true">
+          <path d="M0 6h20.5M16 1l5 5-5 5" stroke="currentColor" stroke-width="1.2"></path>
+        </svg>
+      </button>
+    </div>
+
+    <p class="min-h-14 px-5 py-4 text-center text-sm text-muted sm:px-8" data-lb-caption></p>
+  </div>
+</dialog>
+
+<script type="application/json" id="lightbox-data" set:html={JSON.stringify(slides)} />
+
+<script>
+  interface Slide {
+    src: string;
+    srcset: string;
+    alt: string;
+    caption: string;
+    tone: string;
+  }
+
+  const dialog = document.getElementById('lightbox') as HTMLDialogElement | null;
+  const dataEl = document.getElementById('lightbox-data');
+
+  if (dialog && dataEl) {
+    const slides: Slide[] = JSON.parse(dataEl.textContent ?? '[]');
+    const img = dialog.querySelector<HTMLImageElement>('[data-lb-img]')!;
+    const count = dialog.querySelector<HTMLElement>('[data-lb-count]')!;
+    const caption = dialog.querySelector<HTMLElement>('[data-lb-caption]')!;
+    const pad = (n: number) => String(n).padStart(2, '0');
+    let current = 0;
+    let opener: HTMLElement | null = null;
+
+    const show = (i: number) => {
+      current = (i + slides.length) % slides.length;
+      const s = slides[current];
+      img.style.backgroundColor = s.tone;
+      img.srcset = s.srcset;
+      img.src = s.src;
+      img.alt = s.alt;
+      caption.textContent = s.caption;
+      count.textContent = `${pad(current + 1)} / ${pad(slides.length)}`;
+    };
+
+    document.querySelectorAll<HTMLButtonElement>('[data-lightbox-index]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        opener = btn;
+        show(Number(btn.dataset.lightboxIndex));
+        dialog.showModal();
+      });
+    });
+
+    dialog.querySelector('[data-lb-close]')!.addEventListener('click', () => dialog.close());
+    dialog.querySelector('[data-lb-prev]')!.addEventListener('click', () => show(current - 1));
+    dialog.querySelector('[data-lb-next]')!.addEventListener('click', () => show(current + 1));
+
+    dialog.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') show(current - 1);
+      if (e.key === 'ArrowRight') show(current + 1);
+    });
+
+    // Swipe on touch screens.
+    let startX = 0;
+    dialog.addEventListener('touchstart', (e) => (startX = e.touches[0].clientX), { passive: true });
+    dialog.addEventListener('touchend', (e) => {
+      const dx = e.changedTouches[0].clientX - startX;
+      if (Math.abs(dx) > 50) show(current + (dx < 0 ? 1 : -1));
+    });
+
+    // Return focus to the photograph that opened the viewer.
+    dialog.addEventListener('close', () => opener?.focus());
+  }
+</script>
+
+<style>
+  .lb-btn {
+    display: inline-grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    color: var(--color-fg);
+    background: rgb(15 14 12 / 0.5);
+    border: 1px solid var(--color-line);
+    cursor: pointer;
+    transition:
+      border-color 200ms,
+      color 200ms;
+  }
+  .lb-btn:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .lightbox[open] {
+      animation: lb-in 400ms var(--ease-film);
+    }
+  }
+  @keyframes lb-in {
+    from {
+      opacity: 0;
+    }
+  }
+</style>

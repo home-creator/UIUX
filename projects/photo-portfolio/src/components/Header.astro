@@ -1,0 +1,48 @@
+---
+import { site } from '../lib/config';
+import ThemeToggle from './ThemeToggle.astro';
+
+interface Props {
+  overlay?: boolean;
+}
+const { overlay = false } = Astro.props;
+
+const path = Astro.url.pathname;
+const nav = [
+  { href: '/#work', label: 'Work', active: path.startsWith('/series') },
+  { href: '/about', label: 'About', active: path.startsWith('/about') },
+  { href: '/about#contact', label: 'Contact', active: false },
+];
+---
+
+<header
+  class:list={[
+    'z-40 w-full',
+    overlay ? 'theme-dark absolute inset-x-0 top-0 bg-gradient-to-b from-bg/70 to-transparent' : 'relative border-b border-line',
+  ]}
+>
+  <div class="mx-auto flex max-w-[1440px] items-center justify-between gap-3 px-4 min-[360px]:px-5 py-5 sm:px-8 md:py-7 lg:px-12">
+    <a href="/" class="group flex items-baseline gap-3" aria-label={`${site.name}, home`}>
+      <span class="font-display text-lg whitespace-nowrap min-[360px]:text-xl tracking-tight text-fg sm:text-2xl">{site.name}</span>
+      <span class="eyebrow hidden sm:inline">{site.role}</span>
+    </a>
+    <nav aria-label="Primary" class="-mr-2 flex items-center gap-0.5 min-[360px]:gap-1 sm:gap-5">
+      <ul class="flex items-center gap-2 text-sm min-[360px]:gap-4 sm:gap-8">
+        {
+          nav.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                class="link inline-flex min-h-11 items-center text-fg/90 hover:text-fg"
+                aria-current={item.active ? 'page' : undefined}
+              >
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <ThemeToggle />
+    </nav>
+  </div>
+</header>

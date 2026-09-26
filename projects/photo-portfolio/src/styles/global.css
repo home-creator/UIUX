@@ -1,0 +1,198 @@
+@import 'tailwindcss';
+
+/*
+ * Palette & atmosphere — two rooms.
+ * Dark (default): a warm, film-like darkroom. Near-black with a brown cast
+ * (never pure #000), paper-white type, a single muted brass accent.
+ * Light: the same palette printed on warm paper, with ink-brown type.
+ * Every text pair passes WCAG AA on --color-bg in both themes.
+ */
+@theme {
+  --color-bg: #0f0e0c; /* background — warm black */
+  --color-surface: #171512; /* raised surfaces */
+  --color-line: #2c2824; /* hairlines */
+  --color-fg: #ece6db; /* primary text — 15.5:1 on bg */
+  --color-muted: #a39b8e; /* secondary text — 7.0:1 on bg */
+  --color-accent: #c2a57a; /* accent — 8.2:1 on bg */
+
+  --font-display: 'Libre Bodoni', 'Bodoni Moda', Didot, 'Times New Roman', serif;
+  --font-sans: 'Public Sans', ui-sans-serif, system-ui, sans-serif;
+
+  --ease-film: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Light room — set on <html> by the theme script in Base.astro. */
+:root[data-theme='light'] {
+  color-scheme: light;
+  --color-bg: #f3eee6; /* warm paper */
+  --color-surface: #eae3d8;
+  --color-line: #d6cdbf;
+  --color-fg: #1b1814; /* 15.3:1 on bg */
+  --color-muted: #5e564b; /* 6.3:1 on bg */
+  --color-accent: #7d5f36; /* 5.1:1 on bg */
+  --grain-invert: 1;
+  --grain-opacity: 0.05;
+  --tint-strength: 0.5;
+}
+
+/*
+ * Always-dark scope for places where type sits on a photograph (the hero,
+ * its overlaid header) and for the photo viewer — photographs read best
+ * against dark, whatever the page theme.
+ */
+.theme-dark {
+  color-scheme: dark;
+  --color-bg: #0f0e0c;
+  --color-surface: #171512;
+  --color-line: #2c2824;
+  --color-fg: #ece6db;
+  --color-muted: #a39b8e;
+  --color-accent: #c2a57a;
+  color: var(--color-fg);
+}
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html {
+    background: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    min-height: 100dvh;
+    font-size: 1rem;
+    line-height: 1.65;
+  }
+
+  ::selection {
+    background: var(--color-accent);
+    color: var(--color-bg);
+  }
+
+  :focus-visible {
+    outline: 1px solid var(--color-accent);
+    outline-offset: 4px;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+}
+
+/* Cross-document view transitions: a slow cross-fade between pages, no JS. */
+@view-transition {
+  navigation: auto;
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 450ms;
+  animation-timing-function: var(--ease-film);
+}
+
+@layer components {
+  /* Small-caps label used for metadata: "Nº 02 — Milan, 2024". */
+  .eyebrow {
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  /* Hairline link with an underline that draws in. */
+  .link {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-size: 0% 1px;
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    transition:
+      background-size 400ms var(--ease-film),
+      color 200ms;
+    padding-block: 0.25rem;
+  }
+  .link:hover,
+  .link:focus-visible,
+  .link[aria-current='page'] {
+    background-size: 100% 1px;
+  }
+
+  /* Images fade up from their blurred placeholder once decoded. */
+  .cld-frame {
+    background-size: cover;
+    background-position: center;
+  }
+  .cld-img {
+    transition:
+      opacity 900ms var(--ease-film),
+      transform 1400ms var(--ease-film);
+  }
+  .js .cld-img:not([data-loaded]) {
+    opacity: 0;
+  }
+  .cld-img[data-failed] {
+    opacity: 0;
+  }
+}
+
+/* Film grain: a fixed, very faint noise layer over everything. */
+.grain {
+  pointer-events: none;
+  position: fixed;
+  inset: -50%;
+  z-index: 60;
+  opacity: var(--grain-opacity, 0.07);
+  filter: invert(var(--grain-invert, 0));
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain 1.2s steps(6) infinite;
+}
+@keyframes grain {
+  0% { transform: translate(0, 0); }
+  20% { transform: translate(-3%, 2%); }
+  40% { transform: translate(2%, -3%); }
+  60% { transform: translate(-2%, -1%); }
+  80% { transform: translate(3%, 3%); }
+  100% { transform: translate(0, 0); }
+}
+
+/* Scroll reveal — only when JS is on and the visitor hasn't asked for less motion. */
+@media (prefers-reduced-motion: no-preference) {
+  .js [data-reveal] {
+    opacity: 0;
+    transform: translateY(18px);
+    transition:
+      opacity 1000ms var(--ease-film),
+      transform 1000ms var(--ease-film);
+    transition-delay: var(--delay, 0ms);
+  }
+  .js [data-reveal].is-visible {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grain {
+    animation: none;
+  }
+  .cld-img,
+  .link {
+    transition: none;
+  }
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+  }
+}

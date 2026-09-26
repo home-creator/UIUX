@@ -1,12 +1,12 @@
 ---
 import Base from '../layouts/Base.astro';
 import CldImage from '../components/CldImage.astro';
-import { site } from '../data/site';
-import { series } from '../data/series';
+import Emphasis from '../components/Emphasis.astro';
+import { site, series } from '../lib/config';
 import { cldUrl, cldSrcset, cldPlaceholder } from '../lib/cloudinary';
 
 const pad = (n: number) => String(n).padStart(2, '0');
-const { hero } = site;
+const { hero } = site.home;
 ---
 
 <Base overlayHeader>
@@ -50,7 +50,7 @@ const { hero } = site;
         data-reveal
         style="--delay:120ms"
       >
-        Stillness, <em class="text-accent">held</em> a moment longer.
+        <Emphasis text={site.home.headline} />
       </h1>
       <div class="mt-10 flex flex-wrap items-end justify-between gap-6" data-reveal style="--delay:240ms">
         <a href="#work" class="link inline-flex min-h-11 items-center gap-3 text-sm tracking-wide">
@@ -70,7 +70,7 @@ const { hero } = site;
       class="mx-auto max-w-3xl text-center font-display text-[clamp(1.6rem,3.2vw,2.6rem)] leading-[1.25] font-normal italic text-fg/90"
       data-reveal
     >
-      “{site.tagline}”
+      “{site.home.tagline}”
     </p>
   </section>
 
@@ -144,7 +144,7 @@ const { hero } = site;
       <p class="eyebrow md:col-span-3">Commissions</p>
       <div class="md:col-span-9">
         <h2 class="max-w-3xl font-display text-[clamp(2rem,4vw,3.5rem)] leading-[1.05] font-normal tracking-[-0.02em]">
-          Available for editorial, portrait and interiors work — and for prints.
+          {site.home.commissions}
         </h2>
         <div class="mt-10 flex flex-wrap gap-x-10 gap-y-4">
           <a

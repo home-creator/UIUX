@@ -1,10 +1,11 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
+import siteConfig from './site.config.ts';
 
 export default defineConfig({
-  // Set this to your production URL (used for canonical + Open Graph URLs).
-  site: 'https://example.com',
+  // Production URL — set it in site.config.ts.
+  site: siteConfig.url,
   vite: {
     plugins: [tailwindcss()],
   },

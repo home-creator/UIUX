@@ -1,0 +1,11 @@
+---
+// Renders "a *word* here" with the starred word in italic accent colour.
+import { emphasis } from '../lib/config';
+
+interface Props {
+  text: string;
+}
+const parts = emphasis(Astro.props.text);
+---
+
+{parts.map((p) => (p.em ? <em class="text-accent">{p.text}</em> : p.text))}

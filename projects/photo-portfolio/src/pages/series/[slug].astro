@@ -3,7 +3,7 @@ import type { GetStaticPaths } from 'astro';
 import Base from '../../layouts/Base.astro';
 import CldImage from '../../components/CldImage.astro';
 import Lightbox from '../../components/Lightbox.astro';
-import { series, type Series } from '../../data/series';
+import { series, type Series } from '../../lib/config';
 
 export const getStaticPaths = (() =>
   series.map((s, i) => ({

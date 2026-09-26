@@ -6,8 +6,11 @@
  * and f_auto/q_auto let Cloudinary serve AVIF/WebP at a sensible quality.
  */
 
+import config from '../../site.config';
+
+/** From site.config.ts; PUBLIC_CLOUDINARY_CLOUD_NAME in .env overrides it. */
 export const CLOUD_NAME: string =
-  import.meta.env.PUBLIC_CLOUDINARY_CLOUD_NAME || 'demo';
+  import.meta.env.PUBLIC_CLOUDINARY_CLOUD_NAME || config.cloudinary.cloudName;
 
 const BASE = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload`;
 
